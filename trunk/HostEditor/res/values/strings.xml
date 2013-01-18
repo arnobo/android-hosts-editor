@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hosts Manager</string>
+    <string name="editKey">Edit</string>
+    <string name="newKey">Add new host</string>
+    <string name="deleteKey">Delete</string>
+    <string name="cancelKey">Cancel</string>
+    <string name="confirmKey">Confirm</string>
+    <string name="hostnameKey">Host Name</string>
+    <string name="ipAddressKey">IP Address</string>
+    <string name="notRootMsgKey">Impossible to edit your hosts. You are not a root user</string>
+</resources>
