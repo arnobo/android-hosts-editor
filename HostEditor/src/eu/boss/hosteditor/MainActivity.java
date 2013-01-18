@@ -53,7 +53,7 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent i = new Intent(MainActivity.this, NewHostActivity.class);
 		i.putExtra("isNew", true);
-		startActivity(i);
+		startActivityForResult(i, NEW_HOST);
 		return true;
 	}
 
@@ -188,20 +188,20 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 	private void saveHosts() {
 		Process p;
 		try {
-		// Preform su to get root privledges
-		p = Runtime.getRuntime().exec("su");
+			// Preform su to get root privledges
+			p = Runtime.getRuntime().exec("su");
 
-		FileOutputStream fOut = openFileOutput(HOST_FILE, MODE_WORLD_READABLE);
-		OutputStreamWriter osw = new OutputStreamWriter(fOut);
+			FileOutputStream fOut = new FileOutputStream(HOST_FILE);
+			OutputStreamWriter osw = new OutputStreamWriter(fOut);
 
-		// Write the string to the file
-		osw.write("test");
+			// Write the string to the file
+			osw.write("test");
 
-		/*
-		 * ensure that everything is really written out and close
-		 */
-		osw.flush();
-		osw.close();
+			/*
+			 * ensure that everything is really written out and close
+			 */
+			osw.flush();
+			osw.close();
 			try {
 				p.waitFor();
 				if (p.exitValue() != 255) {
