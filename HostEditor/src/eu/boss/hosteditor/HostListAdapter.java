@@ -33,7 +33,6 @@ public class HostListAdapter extends BaseAdapter {
 		} catch (NullPointerException e) {
 			mCheckedState = new boolean[0];
 		}
-
 	}
 
 	@Override
