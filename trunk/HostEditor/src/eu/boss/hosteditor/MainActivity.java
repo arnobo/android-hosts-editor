@@ -1,16 +1,15 @@
 package eu.boss.hosteditor;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -24,11 +23,9 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class MainActivity extends SherlockActivity implements OnItemClickListener {
+public class MainActivity extends SherlockActivity implements
+		OnItemClickListener {
 
-	private static final int NEW_HOST = 0;
-	private static final int EDIT_HOST = 1;
-	private static final String HOST_FILE = "/etc/hosts";
 	private ArrayList<Host> hostList;
 	private ListView lvHosts;
 	private HostListAdapter adapter;
@@ -53,9 +50,9 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent i = new Intent(MainActivity.this, NewHostActivity.class);
-		i.putExtra("isNew", true);
-		startActivityForResult(i, NEW_HOST);
+		Intent i = new Intent(MainActivity.this, HostActivity.class);
+		i.putExtra(Config.IS_NEW, true);
+		startActivityForResult(i, Config.NEW_HOST);
 		return true;
 	}
 
@@ -73,7 +70,8 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 				}
 			}
 		}
-		if (isOneItemSelected) mMode = startActionMode(new ActionModeHostSelected());
+		if (isOneItemSelected)
+			mMode = startActionMode(new ActionModeHostSelected());
 		else if (mMode != null) {
 			mMode.finish();
 		}
@@ -87,13 +85,16 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			// Used to put dark icons on light action bar
 
-			if (!mMultipleItemsSelected) menu.add(getString(R.string.editKey))
-					.setIcon(R.drawable.ic_edit).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-			else mMultipleItemsSelected = false;
+			if (!mMultipleItemsSelected)
+				menu.add(getString(R.string.editKey))
+						.setIcon(R.drawable.ic_edit)
+						.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+			else
+				mMultipleItemsSelected = false;
 
-			menu.add(getString(R.string.deleteKey)).setIcon(R.drawable.ic_garbage)
+			menu.add(getString(R.string.deleteKey))
+					.setIcon(R.drawable.ic_garbage)
 					.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
 			return true;
@@ -106,10 +107,16 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			if (item.getTitle().toString().compareTo(getString(R.string.editKey)) == 0) {
-				editHost(0);
+			if (item.getTitle().toString()
+					.compareTo(getString(R.string.editKey)) == 0) {
+				for (int position = 0; position < adapter.getCheckedState().length; position++) {
+					if (adapter.getCheckedState()[position] == true) {
+						editHost(position);
+						break;
+					}
+				}
 			} else {
-
+				displayPopupMessage(getString(R.string.confirmDeleteMsg));
 			}
 
 			mode.finish();
@@ -128,25 +135,40 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 	}
 
 	private void editHost(int position) {
-		Intent intent = new Intent(MainActivity.this, NewHostActivity.class);
-		intent.putExtra("isNew", false);
-		startActivityForResult(intent, EDIT_HOST);
+		Intent intent = new Intent(MainActivity.this, HostActivity.class);
+		intent.putExtra(Config.IS_NEW, false);
+		intent.putExtra(Config.HOST, hostList.get(position).getHostName());
+		intent.putExtra(Config.IP, hostList.get(position).getIpAddress());
+		startActivityForResult(intent, Config.EDIT_HOST);
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if ((requestCode == NEW_HOST) && (resultCode == RESULT_OK)) saveHosts();
-
-		else if ((requestCode == EDIT_HOST) && (resultCode == RESULT_OK)) {
+		Bundle extras = data.getExtras();
+		if ((requestCode == Config.NEW_HOST) && (resultCode == RESULT_OK)) {
+			hostList.add(new Host(extras.getString(Config.IP), extras
+					.getString(Config.HOST)));
 		}
+
+		else if ((requestCode == Config.EDIT_HOST) && (resultCode == RESULT_OK)) {
+			hostList.remove(uniqueItemSelected);
+			hostList.add(
+					uniqueItemSelected,
+					new Host(extras.getString(Config.IP), extras
+							.getString(Config.HOST)));
+		}
+
+		else if (resultCode == Config.RESULT_DELETE)
+			hostList.remove(uniqueItemSelected);
+
+		uniqueItemSelected = -1;
+		saveHosts();
 	}
 
 	private void loadHosts() {
 		try {
-			Process p;
-
-			FileInputStream objFile = new FileInputStream(HOST_FILE);
+			FileInputStream objFile = new FileInputStream(Config.HOST_FILE);
 			InputStreamReader objReader = new InputStreamReader(objFile);
 			BufferedReader objBufferReader = new BufferedReader(objReader);
 			String strLine;
@@ -172,31 +194,26 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 	private void saveHosts() {
 		Process p;
 		try {
-			// Preform su to get root privledges
+			// Perform su to get root privileges
 			p = Runtime.getRuntime().exec("su");
-			DataOutputStream os = new DataOutputStream(p.getOutputStream());
-			os.writeBytes("chmod 7 etc/hosts\n");
 
-			OutputStream myOutput;
-			try {
-				myOutput = new BufferedOutputStream(new FileOutputStream(HOST_FILE, true));
-				myOutput.write(new String("TEST test").getBytes());
-				myOutput.flush();
-				myOutput.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				os.writeBytes("chmod 5 etc/hosts\n");
-				os.writeBytes("exit\n");
-				os.flush();
+			DataOutputStream os = new DataOutputStream(p.getOutputStream());
+			os.writeBytes("mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system\n");
+			os.writeBytes("echo '' > /system/etc/hosts\n");
+			Iterator<Host> it = hostList.iterator();
+			while (it.hasNext()) {
+				os.writeBytes("echo '" + it.next().toString()
+						+ "' >> /system/etc/hosts\n");
 			}
+			os.writeBytes("mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system\n");
+			os.writeBytes("exit\n");
+			os.flush();
+
 			try {
 				p.waitFor();
 				if (p.exitValue() != 255) {
 					// Code to run on success
-					toastMessage("root");
+					adapter.replace(hostList);
 				} else {
 					// Code to run on unsuccessful
 					toastMessage(getString(R.string.notRootMsgKey));
@@ -209,37 +226,38 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 			// Code to run in interrupted exception
 			toastMessage(getString(R.string.notRootMsgKey));
 		}
-		// while (true)
-		// {
-		// ArrayList localArrayList;
-		// StringBuilder localStringBuilder2;
-		// int j;
-		// Log.e("HostsEditor", localIOException.getMessage(), localIOException);
-		// continue;
-		// localArrayList.add(localStringBuilder2.toString());
-		// String[] arrayOfString1 = g.a();
-		// Process localProcess = Runtime.getRuntime().exec("su");
-		// DataOutputStream localDataOutputStream = new
-		// DataOutputStream(localProcess.getOutputStream());
-		// localDataOutputStream.writeBytes("mount -o rw,remount -t " + arrayOfString1[1] + " " +
-		// arrayOfString1[0] + " /system\n");
-		// localDataOutputStream.writeBytes("echo '' > /system/etc/hosts\n");
-		// Iterator localIterator3 = localArrayList.iterator();
-		// while (localIterator3.hasNext())
-		// {
-		// String str = (String)localIterator3.next();
-		// localDataOutputStream.writeBytes("echo '" + str + "' >> /system/etc/hosts\n");
-		// }
-		// localDataOutputStream.writeBytes("mount -o ro,remount -t " + arrayOfString1[1] + " " +
-		// arrayOfString1[0] + " /system\n");
-		// localDataOutputStream.writeBytes("exit\n");
-		// localDataOutputStream.flush();
-		// localProcess.waitFor();
-		// if (localProcess.exitValue() == 255)
-		// continue;
-		// Boolean localBoolean = Boolean.TRUE;
-		// continue;
-		// label521: int i = j;
-		// }
+	}
+
+	public void displayPopupMessage(String message) {
+		AlertDialog.Builder adb = new AlertDialog.Builder(this);
+		adb.setTitle(getString(R.string.confirmKey));
+		adb.setMessage(message);
+		adb.setPositiveButton(getString(R.string.okKey),
+				new DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						if (!mMultipleItemsSelected)
+							hostList.remove(uniqueItemSelected);
+						else
+							for (int position = 0; position < adapter
+									.getCheckedState().length; position++) {
+								if (adapter.getCheckedState()[position] == true) {
+									hostList.remove(position);
+								}
+							}
+						saveHosts();
+					}
+				});
+		adb.setNegativeButton(getString(R.string.cancelKey), null);
+		adb.show();
+	}
+
+	public void displayErrorMessage(String message) {
+		AlertDialog.Builder adb = new AlertDialog.Builder(this);
+		adb.setTitle(getString(R.string.errorKey));
+		adb.setMessage(message);
+		adb.setPositiveButton(getString(R.string.okKey), null);
+		adb.setNegativeButton(getString(R.string.cancelKey), null);
+		adb.show();
 	}
 }

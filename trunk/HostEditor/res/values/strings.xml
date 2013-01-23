@@ -8,5 +8,10 @@
     <string name="confirmKey">Confirm</string>
     <string name="hostnameKey">Host Name</string>
     <string name="ipAddressKey">IP Address</string>
+    <string name="okKey">Ok</string>
+    <string name="cancelKey">Cancel</string>
+    <string name="confirmKey">Confirm</string>
     <string name="notRootMsgKey">Impossible to edit your hosts. You are not a root user</string>
+    <string name="errorKey">Error</string>
+    <string name="confirmDeleteMsg">Are you sure you want to delete the selected hosts ?</string>
 </resources>
