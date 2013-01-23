@@ -23,8 +23,7 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class MainActivity extends SherlockActivity implements
-		OnItemClickListener {
+public class MainActivity extends SherlockActivity implements OnItemClickListener {
 
 	private ArrayList<Host> hostList;
 	private ListView lvHosts;
@@ -70,8 +69,7 @@ public class MainActivity extends SherlockActivity implements
 				}
 			}
 		}
-		if (isOneItemSelected)
-			mMode = startActionMode(new ActionModeHostSelected());
+		if (isOneItemSelected) mMode = startActionMode(new ActionModeHostSelected());
 		else if (mMode != null) {
 			mMode.finish();
 		}
@@ -86,15 +84,13 @@ public class MainActivity extends SherlockActivity implements
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
-			if (!mMultipleItemsSelected)
-				menu.add(getString(R.string.editKey))
-						.setIcon(R.drawable.ic_edit)
+			if (!mMultipleItemsSelected) {
+				menu.add(getString(R.string.editKey)).setIcon(R.drawable.ic_edit)
 						.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-			else
 				mMultipleItemsSelected = false;
+			}
 
-			menu.add(getString(R.string.deleteKey))
-					.setIcon(R.drawable.ic_garbage)
+			menu.add(getString(R.string.deleteKey)).setIcon(R.drawable.ic_garbage)
 					.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
 			return true;
@@ -107,8 +103,7 @@ public class MainActivity extends SherlockActivity implements
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			if (item.getTitle().toString()
-					.compareTo(getString(R.string.editKey)) == 0) {
+			if (item.getTitle().toString().compareTo(getString(R.string.editKey)) == 0) {
 				for (int position = 0; position < adapter.getCheckedState().length; position++) {
 					if (adapter.getCheckedState()[position] == true) {
 						editHost(position);
@@ -145,25 +140,24 @@ public class MainActivity extends SherlockActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		Bundle extras = data.getExtras();
-		if ((requestCode == Config.NEW_HOST) && (resultCode == RESULT_OK)) {
-			hostList.add(new Host(extras.getString(Config.IP), extras
-					.getString(Config.HOST)));
+		Bundle extras;
+		if (data != null) {
+			extras = data.getExtras();
+			if ((requestCode == Config.NEW_HOST) && (resultCode == RESULT_OK)) {
+				hostList.add(new Host(extras.getString(Config.IP), extras.getString(Config.HOST)));
+			}
+
+			else if ((requestCode == Config.EDIT_HOST) && (resultCode == RESULT_OK)) {
+				hostList.remove(uniqueItemSelected);
+				hostList.add(uniqueItemSelected,
+						new Host(extras.getString(Config.IP), extras.getString(Config.HOST)));
+			}
+
+			else if (resultCode == Config.RESULT_DELETE) hostList.remove(uniqueItemSelected);
+
+			uniqueItemSelected = -1;
+			saveHosts();
 		}
-
-		else if ((requestCode == Config.EDIT_HOST) && (resultCode == RESULT_OK)) {
-			hostList.remove(uniqueItemSelected);
-			hostList.add(
-					uniqueItemSelected,
-					new Host(extras.getString(Config.IP), extras
-							.getString(Config.HOST)));
-		}
-
-		else if (resultCode == Config.RESULT_DELETE)
-			hostList.remove(uniqueItemSelected);
-
-		uniqueItemSelected = -1;
-		saveHosts();
 	}
 
 	private void loadHosts() {
@@ -202,8 +196,7 @@ public class MainActivity extends SherlockActivity implements
 			os.writeBytes("echo '' > /system/etc/hosts\n");
 			Iterator<Host> it = hostList.iterator();
 			while (it.hasNext()) {
-				os.writeBytes("echo '" + it.next().toString()
-						+ "' >> /system/etc/hosts\n");
+				os.writeBytes("echo '" + it.next().toString() + "' >> /system/etc/hosts\n");
 			}
 			os.writeBytes("mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system\n");
 			os.writeBytes("exit\n");
@@ -213,7 +206,6 @@ public class MainActivity extends SherlockActivity implements
 				p.waitFor();
 				if (p.exitValue() != 255) {
 					// Code to run on success
-					adapter.replace(hostList);
 				} else {
 					// Code to run on unsuccessful
 					toastMessage(getString(R.string.notRootMsgKey));
@@ -232,22 +224,18 @@ public class MainActivity extends SherlockActivity implements
 		AlertDialog.Builder adb = new AlertDialog.Builder(this);
 		adb.setTitle(getString(R.string.confirmKey));
 		adb.setMessage(message);
-		adb.setPositiveButton(getString(R.string.okKey),
-				new DialogInterface.OnClickListener() {
+		adb.setPositiveButton(getString(R.string.okKey), new DialogInterface.OnClickListener() {
 
-					public void onClick(DialogInterface dialog, int which) {
-						if (!mMultipleItemsSelected)
-							hostList.remove(uniqueItemSelected);
-						else
-							for (int position = 0; position < adapter
-									.getCheckedState().length; position++) {
-								if (adapter.getCheckedState()[position] == true) {
-									hostList.remove(position);
-								}
-							}
-						saveHosts();
+			public void onClick(DialogInterface dialog, int which) {
+				if (!mMultipleItemsSelected) hostList.remove(uniqueItemSelected);
+				else for (int position = 0; position < adapter.getCheckedState().length; position++) {
+					if (adapter.getCheckedState()[position] == true) {
+						hostList.remove(position);
 					}
-				});
+				}
+				saveHosts();
+			}
+		});
 		adb.setNegativeButton(getString(R.string.cancelKey), null);
 		adb.show();
 	}
