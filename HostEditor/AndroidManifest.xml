@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="eu.boss.hosteditor.NewHostActivity"
+            android:name="eu.boss.hosteditor.HostActivity"
             android:screenOrientation="portrait" />
     </application>
 
