@@ -27,19 +27,17 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 		etHost = (EditText) findViewById(R.id.etHost);
 		etIp = (EditText) findViewById(R.id.etIp);
 
-		if (!isNew) {
-			etHost.setText(getIntent().getExtras().getString(Config.HOST)
-					.replaceAll("\\s", ""));
-			etIp.setText(getIntent().getExtras().getString(Config.IP)
-					.replaceAll("\\s", ""));
-		}
-
 		Button btnConfirm = (Button) findViewById(R.id.btnConfirm);
 		Button btnCancel = (Button) findViewById(R.id.btnCancel);
 		Button btnDelete = (Button) findViewById(R.id.btnDelete);
 		btnCancel.setOnClickListener(this);
 		btnConfirm.setOnClickListener(this);
 		btnDelete.setOnClickListener(this);
+
+		if (!isNew) {
+			etHost.setText(getIntent().getExtras().getString(Config.HOST).replaceAll("\\s", ""));
+			etIp.setText(getIntent().getExtras().getString(Config.IP).replaceAll("\\s", ""));
+		} else btnDelete.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -71,8 +69,7 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// This uses the imported MenuItem from ActionBarSherlock
-		if (item.getTitle().toString().compareTo(getTitle().toString()) == 0)
-			finish();
+		if (item.getTitle().toString().compareTo(getTitle().toString()) == 0) finish();
 		return true;
 	}
 
@@ -80,15 +77,14 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 		AlertDialog.Builder adb = new AlertDialog.Builder(this);
 		adb.setTitle(getString(R.string.confirmKey));
 		adb.setMessage(message);
-		adb.setPositiveButton(getString(R.string.okKey),
-				new DialogInterface.OnClickListener() {
+		adb.setPositiveButton(getString(R.string.okKey), new DialogInterface.OnClickListener() {
 
-					public void onClick(DialogInterface dialog, int which) {
-						Intent intent = new Intent();
-						setResult(Config.RESULT_DELETE, intent);
-						finish();
-					}
-				});
+			public void onClick(DialogInterface dialog, int which) {
+				Intent intent = new Intent();
+				setResult(Config.RESULT_DELETE, intent);
+				finish();
+			}
+		});
 		adb.setNegativeButton(getString(R.string.cancelKey), null);
 		adb.show();
 	}
