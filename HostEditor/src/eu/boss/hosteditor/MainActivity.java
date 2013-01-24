@@ -56,20 +56,21 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 	}
 
 	public void startActionMode() {
-		boolean isOneItemSelected = false;
+		int itemSelected = 0;
 		for (int position = 0; position < adapter.getCheckedState().length; position++) {
 			if (adapter.getCheckedState()[position] == true) {
-				if (isOneItemSelected) {
+				itemSelected++;
+				if (itemSelected > 1) {
 					mMultipleItemsSelected = true;
 					uniqueItemSelected = -1;
 					break;
 				} else {
-					isOneItemSelected = true;
 					uniqueItemSelected = position;
+					mMultipleItemsSelected = false;
 				}
 			}
 		}
-		if (isOneItemSelected) mMode = startActionMode(new ActionModeHostSelected());
+		if (itemSelected >= 1) mMode = startActionMode(new ActionModeHostSelected());
 		else if (mMode != null) {
 			mMode.finish();
 		}
@@ -142,13 +143,13 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 		super.onActivityResult(requestCode, resultCode, data);
 		Bundle extras;
 		if (data != null) {
-			//get new host added in hostActivity
+			// get new host added in hostActivity
 			extras = data.getExtras();
 			if ((requestCode == Config.NEW_HOST) && (resultCode == RESULT_OK)) {
 				hostList.add(new Host(extras.getString(Config.IP), extras.getString(Config.HOST)));
 			}
 
-			//remove edited host and replace it by the new one
+			// remove edited host and replace it by the new one
 			else if ((requestCode == Config.EDIT_HOST) && (resultCode == RESULT_OK)) {
 				hostList.remove(uniqueItemSelected);
 				hostList.add(uniqueItemSelected,
@@ -157,15 +158,15 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 
 			else if (resultCode == Config.RESULT_DELETE) hostList.remove(uniqueItemSelected);
 
-			uniqueItemSelected = -1;
 			saveHosts();
 		}
 	}
 
 	/**
-	 * Loads hosts from file. No need root because host file is reading mode.
-	 * Just opens the file and read it
+	 * Loads hosts from file. No need root because host file is reading mode. Just opens the file and
+	 * read it
 	 */
+	@SuppressWarnings("unchecked")
 	private void loadHosts() {
 		try {
 			FileInputStream objFile = new FileInputStream(Config.HOST_FILE);
@@ -181,7 +182,7 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 			}
 
 			objFile.close();
-			adapter = new HostListAdapter(this, hostList, lvHosts);
+			adapter = new HostListAdapter(this, (ArrayList<Host>) hostList.clone(), lvHosts);
 			lvHosts.setAdapter(adapter);
 			lvHosts.setOnItemClickListener(this);
 
@@ -191,8 +192,9 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 		}
 	}
 
-	// saves host into host file. Mount the system folder to allows write into the file. 
+	// saves host into host file. Mount the system folder to allows write into the file.
 	// Reverse operation at least to get back the file state
+	@SuppressWarnings("unchecked")
 	private void saveHosts() {
 		Process p;
 		try {
@@ -214,6 +216,10 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 				p.waitFor();
 				if (p.exitValue() != 255) {
 					// Code to run on success
+					uniqueItemSelected = -1;
+					mMultipleItemsSelected = false;
+					adapter = new HostListAdapter(this, (ArrayList<Host>) hostList.clone(), lvHosts);
+					lvHosts.setAdapter(adapter);
 				} else {
 					// Code to run on unsuccessful
 					toastMessage(getString(R.string.notRootMsgKey));

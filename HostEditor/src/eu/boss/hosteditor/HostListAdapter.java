@@ -87,6 +87,7 @@ public class HostListAdapter extends BaseAdapter {
 	}
 
 	public void replace(ArrayList<Host> list) {
+		mCheckedState = new boolean[list.size()];
 		clear();
 		addAll(list);
 	}
