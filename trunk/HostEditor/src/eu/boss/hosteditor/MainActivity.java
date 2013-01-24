@@ -142,11 +142,13 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 		super.onActivityResult(requestCode, resultCode, data);
 		Bundle extras;
 		if (data != null) {
+			//get new host added in hostActivity
 			extras = data.getExtras();
 			if ((requestCode == Config.NEW_HOST) && (resultCode == RESULT_OK)) {
 				hostList.add(new Host(extras.getString(Config.IP), extras.getString(Config.HOST)));
 			}
 
+			//remove edited host and replace it by the new one
 			else if ((requestCode == Config.EDIT_HOST) && (resultCode == RESULT_OK)) {
 				hostList.remove(uniqueItemSelected);
 				hostList.add(uniqueItemSelected,
@@ -160,6 +162,10 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 		}
 	}
 
+	/**
+	 * Loads hosts from file. No need root because host file is reading mode.
+	 * Just opens the file and read it
+	 */
 	private void loadHosts() {
 		try {
 			FileInputStream objFile = new FileInputStream(Config.HOST_FILE);
@@ -185,6 +191,8 @@ public class MainActivity extends SherlockActivity implements OnItemClickListene
 		}
 	}
 
+	// saves host into host file. Mount the system folder to allows write into the file. 
+	// Reverse operation at least to get back the file state
 	private void saveHosts() {
 		Process p;
 		try {
