@@ -46,12 +46,21 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 		case R.id.btnConfirm:
 			String host = etHost.getText().toString();
 			String ip = etIp.getText().toString();
-			if ((host.compareTo("") != 0) && (ip.compareTo("") != 0)) {
+			try {
+				if (host.compareTo("") == 0) throw new Exception(getString(R.string.invalidHostKey));
+
+				if ((!ip
+						.matches("^\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b$"))
+						|| (ip.compareTo("") == 0)) throw new Exception(getString(R.string.invalidIPKey));
+
 				Intent intent = new Intent();
 				intent.putExtra(Config.HOST, host);
 				intent.putExtra(Config.IP, ip);
 				setResult(RESULT_OK, intent);
 				finish();
+
+			} catch (Exception e) {
+				displayErrorMessage(e.getMessage());
 			}
 			break;
 		case R.id.btnCancel:
@@ -85,6 +94,15 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 				finish();
 			}
 		});
+		adb.setNegativeButton(getString(R.string.cancelKey), null);
+		adb.show();
+	}
+
+	public void displayErrorMessage(String message) {
+		AlertDialog.Builder adb = new AlertDialog.Builder(this);
+		adb.setTitle(getString(R.string.errorKey));
+		adb.setMessage(message);
+		adb.setPositiveButton(getString(R.string.okKey), null);
 		adb.setNegativeButton(getString(R.string.cancelKey), null);
 		adb.show();
 	}
