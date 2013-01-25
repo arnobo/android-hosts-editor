@@ -9,5 +9,10 @@ public class Config {
 	public static final String HOST = "HOST";
 	public static final String IP = "IP";
 	public static final String IS_NEW = "IS_NEW";
+	
+	public static Host BASE_HOST;
+	static{
+		BASE_HOST=new Host("127.0.0.1", "localhost");
+	}
 
 }

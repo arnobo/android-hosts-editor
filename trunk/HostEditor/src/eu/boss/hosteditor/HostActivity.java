@@ -35,9 +35,12 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 		btnDelete.setOnClickListener(this);
 
 		if (!isNew) {
-			etHost.setText(getIntent().getExtras().getString(Config.HOST).replaceAll("\\s", ""));
-			etIp.setText(getIntent().getExtras().getString(Config.IP).replaceAll("\\s", ""));
-		} else btnDelete.setVisibility(View.GONE);
+			etHost.setText(getIntent().getExtras().getString(Config.HOST)
+					.replaceAll("\\s", ""));
+			etIp.setText(getIntent().getExtras().getString(Config.IP)
+					.replaceAll("\\s", ""));
+		} else
+			btnDelete.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -47,11 +50,12 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 			String host = etHost.getText().toString();
 			String ip = etIp.getText().toString();
 			try {
-				if (host.compareTo("") == 0) throw new Exception(getString(R.string.invalidHostKey));
+				if (host.compareTo("") == 0)
+					throw new Exception(getString(R.string.invalidHostKey));
 
-				if ((!ip
-						.matches("^\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b$"))
-						|| (ip.compareTo("") == 0)) throw new Exception(getString(R.string.invalidIPKey));
+				if ((!ip.matches("^\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b$"))
+						|| (ip.compareTo("") == 0))
+					throw new Exception(getString(R.string.invalidIPKey));
 
 				Intent intent = new Intent();
 				intent.putExtra(Config.HOST, host);
@@ -78,7 +82,8 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// This uses the imported MenuItem from ActionBarSherlock
-		if (item.getTitle().toString().compareTo(getTitle().toString()) == 0) finish();
+		if (item.getTitle().toString().compareTo(getTitle().toString()) == 0)
+			finish();
 		return true;
 	}
 
@@ -86,15 +91,17 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 		AlertDialog.Builder adb = new AlertDialog.Builder(this);
 		adb.setTitle(getString(R.string.confirmKey));
 		adb.setMessage(message);
-		adb.setPositiveButton(getString(R.string.okKey), new DialogInterface.OnClickListener() {
-
-			public void onClick(DialogInterface dialog, int which) {
-				Intent intent = new Intent();
-				setResult(Config.RESULT_DELETE, intent);
-				finish();
-			}
-		});
 		adb.setNegativeButton(getString(R.string.cancelKey), null);
+		adb.setPositiveButton(getString(R.string.okKey),
+				new DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						Intent intent = new Intent();
+						setResult(Config.RESULT_DELETE, intent);
+						finish();
+					}
+				});
+
 		adb.show();
 	}
 

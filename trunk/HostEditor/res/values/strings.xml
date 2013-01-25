@@ -16,4 +16,6 @@
     <string name="confirmDeleteMsg">Are you sure you want to delete the selected hosts ?</string>
     <string name="invalidHostKey">The entered host is invalid</string>
     <string name="invalidIPKey">The entered IP is invalid</string>
+    <string name="resetKey">Reset</string>
+    <string name="resetMsgKey">Are you sure you want to reset the hosts to default ?</string>
 </resources>
