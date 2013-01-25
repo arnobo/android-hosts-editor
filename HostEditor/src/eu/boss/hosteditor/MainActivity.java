@@ -309,7 +309,6 @@ public class MainActivity extends SherlockActivity implements
 		adb.setTitle(getString(R.string.errorKey));
 		adb.setMessage(message);
 		adb.setPositiveButton(getString(R.string.okKey), null);
-		adb.setNegativeButton(getString(R.string.cancelKey), null);
 		adb.show();
 	}
 }
