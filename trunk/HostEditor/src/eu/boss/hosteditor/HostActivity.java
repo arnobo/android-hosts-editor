@@ -53,7 +53,8 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 				if (host.compareTo("") == 0)
 					throw new Exception(getString(R.string.invalidHostKey));
 
-				if ((!ip.matches("^\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b$"))
+				if ((!ip
+						.matches("^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$"))
 						|| (ip.compareTo("") == 0))
 					throw new Exception(getString(R.string.invalidIPKey));
 
@@ -110,7 +111,6 @@ public class HostActivity extends SherlockActivity implements OnClickListener {
 		adb.setTitle(getString(R.string.errorKey));
 		adb.setMessage(message);
 		adb.setPositiveButton(getString(R.string.okKey), null);
-		adb.setNegativeButton(getString(R.string.cancelKey), null);
 		adb.show();
 	}
 

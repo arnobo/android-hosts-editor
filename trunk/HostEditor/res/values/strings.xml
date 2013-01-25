@@ -4,8 +4,6 @@
     <string name="editKey">Edit</string>
     <string name="newKey">Add new host</string>
     <string name="deleteKey">Delete</string>
-    <string name="cancelKey">Cancel</string>
-    <string name="confirmKey">Confirm</string>
     <string name="hostnameKey">Host Name</string>
     <string name="ipAddressKey">IP Address</string>
     <string name="okKey">Ok</string>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hosts Manager</string>
+    <string name="editKey">Editer</string>
+    <string name="newKey">Ajouter nouveau host</string>
+    <string name="deleteKey">Supprimer</string>
+    <string name="cancelKey">Annuler</string>
+    <string name="confirmKey">Confirmer</string>
+    <string name="hostnameKey">Nom du host</string>
+    <string name="ipAddressKey">Adresse IP</string>
+    <string name="okKey">Ok</string>
+    <string name="notRootMsgKey">Impossible d\'éditer vos hosts. Vous n\'êtes pas un utilisateur root</string>
+    <string name="errorKey">Erreur</string>
+    <string name="confirmDeleteMsg">Êtes-vous sûr de vouloir supprmier les hosts sélectionnés ?</string>
+    <string name="invalidHostKey">Host invalide</string>
+    <string name="invalidIPKey">IP invalide</string>
+    <string name="resetKey">Reset</string>
+    <string name="resetMsgKey">Êtes-vous sûr de vouloir remettre les hosts par défaut ?</string>
+</resources>

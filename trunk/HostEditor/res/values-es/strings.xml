@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hosts Manager</string>
+    <string name="editKey">Editar</string>
+    <string name="newKey">Añadir nuevo host</string>
+    <string name="deleteKey">Borrar</string>
+    <string name="hostnameKey">Host Nombre</string>
+    <string name="ipAddressKey">Dirección IP</string>
+    <string name="okKey">Ok</string>
+    <string name="cancelKey">Cancelar</string>
+    <string name="confirmKey">Confirmar</string>
+    <string name="notRootMsgKey">Imposible editar sus anfitriones. Usted no es un usuario root</string>
+    <string name="errorKey">Error</string>
+    <string name="confirmDeleteMsg">¿Está seguro que desea eliminar los anfitriones seleccionados?</string>
+    <string name="invalidHostKey">El host introducido no es válido</string>
+    <string name="invalidIPKey">La dirección IP introducido no es válido</string>
+    <string name="resetKey">reajustar</string>
+    <string name="resetMsgKey">¿Está seguro de que desea restablecer los anfitriones por defecto?</string>
+</resources>
