@@ -1,0 +1,1 @@
+This application allows to write and edit hosts of rooted android device
